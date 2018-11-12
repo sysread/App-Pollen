@@ -1,0 +1,50 @@
+#!perl
+
+use strict;
+use warnings;
+use JSON::XS;
+
+our $VERSION = '0.01';
+
+die "usage: pollen zip1 [zip2 zip3 ...]\n"
+  unless @ARGV && !grep{ $_ !~ /^\d{5}$/ } @ARGV;
+
+die "curl executable not found\n"
+  unless `which curl`;
+
+foreach my $zip (@ARGV) {
+  my $url = "https://www.pollen.com/api/forecast/current/pollen/$zip";
+  my $res = `curl "$url" -H "Referer: $url" -H 'User-Agent: pollen-cli/0.1' -s`;
+  my $dat = decode_json($res);
+
+  foreach (@{ $dat->{Location}{periods} }) {
+    printf "[Index: %0.1f] %s\n", $_->{Index}, $_->{Type};
+
+    if (@{$_->{Triggers}}) {
+      foreach (@{$_->{Triggers}}) {
+        print "  -$_->{Name} $_->{Genus} ($_->{PlantType})\n";
+      }
+
+      print "\n";
+    }
+  }
+}
+
+=head1 NAME
+
+pollen - show the pollen forecast
+
+=head1 SYNOPSIS
+
+pollen zip1 [zip2 zip3 ...]
+
+=head1 DESCRIPTION
+
+Retrieves and displays pollen forecast data from Pollen.com for the selected
+zip codes.
+
+=head1 REQUIREMENTS
+
+This utility depends on L<JSON::XS> and uses C<curl>.
+
+=cut

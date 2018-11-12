@@ -1,0 +1,17 @@
+=head1 NAME
+
+pollen - show the pollen forecast
+
+=head1 SYNOPSIS
+
+pollen zip1 [zip2 zip3 ...]
+
+=head1 DESCRIPTION
+
+Retrieves and displays pollen forecast data from Pollen.com for the selected
+zip codes.
+
+=head1 REQUIREMENTS
+
+This utility depends on L<JSON::XS> and uses C<curl>.
+
